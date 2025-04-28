@@ -1,0 +1,49 @@
+{
+	"schemaVersion": 1,
+	"id": "comprehension",
+	"version": "${version}",
+	"name": "Comprehension",
+	"description": "A collection of helpful resources used in AcoYT's mods",
+	"authors": [
+		"AcoYT"
+	],
+	"license": "AcoYT License",
+	"icon": "assets/comprehension/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"net.acoyt.comprehension.Comprehension"
+		],
+		"client": [
+			"net.acoyt.comprehension.ComprehensionClient"
+		],
+		"modmenu": [
+			"net.acoyt.comprehension.compat.ModMenuCompat"
+		],
+		"cardinal-components": [
+			"net.acoyt.comprehension.cca.CompComponents"
+		]
+	},
+	"mixins": [
+		"comprehension.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.16.10",
+		"minecraft": "~1.21.5",
+		"java": ">=21",
+		"fabric-api": "*",
+		"modmenu": ">=14.0.0-rc.1"
+	},
+	"custom": {
+		"modmenu": {
+			"links": {
+				"modmenu.youtube": "https://youtube.com/@AcoYTagain",
+				"modmenu.modrinth": "https://modrinth.com/user/AcoYT"
+			}
+		},
+		"cardinal-components": [
+			"comprehension:ticking",
+			"comprehension:hidden"
+		]
+	}
+}

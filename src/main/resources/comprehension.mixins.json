@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "package": "net.acoyt.comprehension.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [],
+  "client": [
+    "client.AbstractClientPlayerEntityMixin",
+    "client.HeldItemRendererMixin",
+    "client.PlayerEntityRendererMixin",
+    "modmenu.ModMenuEntryMixin",
+    "modmenu.ModMenuMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
