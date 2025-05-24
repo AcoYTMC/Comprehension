@@ -2,7 +2,9 @@
   "required": true,
   "package": "net.acoyt.comprehension.mixin",
   "compatibilityLevel": "JAVA_21",
-  "mixins": [],
+  "mixins": [
+    "LivingEntityMixin"
+  ],
   "client": [
     "client.AbstractClientPlayerEntityMixin",
     "client.HeldItemRendererMixin",

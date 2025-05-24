@@ -50,8 +50,8 @@ public class TickingComponent implements CommonTickingComponent, AutoSyncedCompo
     }
 
     public void readFromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
-        nbt.getInt("tickDuration");
-        nbt.getBoolean("isTicking");
+        this.tickDuration = nbt.getInt("tickDuration", 0);
+        this.isTicking = nbt.getBoolean("isTicking", false);
     }
 
     public void writeToNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
