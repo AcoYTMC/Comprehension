@@ -1,7 +1,7 @@
 package net.acoyt.comprehension.init;
 
+import net.acoyt.comprehension.Comprehension;
 import net.acoyt.comprehension.item.SoulSnackItem;
-import net.acoyt.comprehension.util.CompUtils;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
@@ -15,7 +15,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public interface ItemInit {
+public interface ModItems {
     Map<Item, Identifier> ITEMS = new LinkedHashMap<>();
 
     Item HAMBURGER = createItem("hamburger", new Item(new Item.Settings()
@@ -31,35 +31,35 @@ public interface ItemInit {
     /**
      * Item Creation Method 1
      * Requires assigning a registry key via
-     * .registryKey(RegistryKey.of(RegistryKeys.ITEM, CompUtils.id(<ITEM_IDENTIFIER>)))
+     * .registryKey(RegistryKey.of(RegistryKeys.ITEM, Comprehension.id(<ITEM_IDENTIFIER>)))
      * at the end of the Item.Settings()
      */
     private static <T extends Item> T createItem(String name, T item) {
-        ITEMS.put(item, CompUtils.id(name));
+        ITEMS.put(item, Comprehension.id(name));
         return item;
     }
 
     /**
-     * Item Creation Method 2
+     * Item Creation Method 2 (preferred)
      * Doesn't Require assigning a registry key
      */
     static Item create(String name, Function<Item.Settings, Item> factory, Item.Settings settings) {
-        return Items.register(RegistryKey.of(RegistryKeys.ITEM, CompUtils.id(name)), factory, settings);
+        return Items.register(RegistryKey.of(RegistryKeys.ITEM, Comprehension.id(name)), factory, settings);
     }
 
     /**
      * Item Creation Method 3
      * Requires assigning a registry key via
-     * .registryKey(RegistryKey.of(RegistryKeys.ITEM, CompUtils.id(<ITEM_IDENTIFIER>)))
+     * .registryKey(RegistryKey.of(RegistryKeys.ITEM, Comprehension.id(<ITEM_IDENTIFIER>)))
      * at the end of the Item.Settings()
      */
     static Item create(String name, Item item) {
-        return Registry.register(Registries.ITEM, CompUtils.id(name), item);
+        return Registry.register(Registries.ITEM, Comprehension.id(name), item);
     }
 
-    // Alternative for putting RegistryKey.of(RegistryKeys.ITEM, CompUtils.id(<ITEM_IDENTIFIER>)) at the end of the Item.Settings()
+    // Alternative for putting RegistryKey.of(RegistryKeys.ITEM, Comprehension.id(<ITEM_IDENTIFIER>)) at the end of the Item.Settings()
     static RegistryKey<Item> keyOf(String id) {
-        return RegistryKey.of(RegistryKeys.ITEM, CompUtils.id(id));
+        return RegistryKey.of(RegistryKeys.ITEM, Comprehension.id(id));
     }
 
     static void init() {

@@ -3,8 +3,7 @@ package net.acoyt.comprehension.util.supporter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.acoyt.comprehension.util.CompUtils;
-import net.minecraft.entity.player.PlayerEntity;
+import net.acoyt.comprehension.Comprehension;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -14,16 +13,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@SuppressWarnings("deprecation")
 public class SupporterUtils {
-    public static boolean IS_SUPPORTER_REQUIRED = false;
+    private static List<PlayerInfo> cachedSupporters = new ArrayList<>();
+    private static List<PlayerInfo> cachedFriends = new ArrayList<>();
+    private static List<PlayerInfo> cachedBlacklisted = new ArrayList<>();
+    private long lastFetchTime = 0;
 
-    // Fetches the list of Supporters from the url
-    public static List<PlayerInfo> fetchPlayers() {
-        List<PlayerInfo> players = new ArrayList<>();
+    public List<List<PlayerInfo>> fetchPlayers() {
+        long now = System.currentTimeMillis();
+        long CACHE_DURATION = 5 * 60 * 1000;
+        if (now - lastFetchTime < CACHE_DURATION) {
+            if (!cachedSupporters.isEmpty() || !cachedFriends.isEmpty() || !cachedBlacklisted.isEmpty()) {
+                return List.of(
+                        cachedSupporters,
+                        cachedFriends,
+                        cachedBlacklisted
+                );
+            }
+        }
+
+        List<PlayerInfo> supporters = new ArrayList<>();
+        List<PlayerInfo> friends = new ArrayList<>();
+        List<PlayerInfo> blacklisted = new ArrayList<>();
         try {
-            // Supporter List URL
-            URL url = new URL("https://raw.githubusercontent.com/AcoYTMC/Data/main/players.json");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            HttpURLConnection connection = (HttpURLConnection) new URL("https://raw.githubusercontent.com/AcoYTMC/Data/main/test.json").openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Accept", "application/json");
             connection.setConnectTimeout(5000);
@@ -33,59 +47,85 @@ public class SupporterUtils {
                 InputStreamReader reader = new InputStreamReader(connection.getInputStream());
                 JsonObject jsonObject = JsonParser.parseReader(reader).getAsJsonObject();
 
-                // check if "players" exists, and is an array
-                if (jsonObject.has("players") && jsonObject.get("players").isJsonArray()) {
-                    JsonArray playerArray = jsonObject.getAsJsonArray("players");
-
-                    for (var element : playerArray) {
+                if (containsArray(jsonObject, "supporters") && containsArray(jsonObject, "friends") && containsArray(jsonObject, "blacklisted")) {
+                    JsonArray supporterArray = jsonObject.getAsJsonArray("supporters");
+                    for (var element : supporterArray) {
                         JsonObject playerObj = element.getAsJsonObject();
                         String uuid = playerObj.get("uuid").getAsString();
                         String username = playerObj.get("username").getAsString();
-                        players.add(new PlayerInfo(uuid, username));
+                        supporters.add(new PlayerInfo(uuid, username));
                     }
+
+                    JsonArray friendArray = jsonObject.getAsJsonArray("friends");
+                    for (var element : friendArray) {
+                        JsonObject playerObj = element.getAsJsonObject();
+                        String uuid = playerObj.get("uuid").getAsString();
+                        String username = playerObj.get("username").getAsString();
+                        friends.add(new PlayerInfo(uuid, username));
+                    }
+
+                    JsonArray blacklistArray = jsonObject.getAsJsonArray("blacklisted");
+                    for (var element : blacklistArray) {
+                        JsonObject playerObj = element.getAsJsonObject();
+                        String uuid = playerObj.get("uuid").getAsString();
+                        String username = playerObj.get("username").getAsString();
+                        blacklisted.add(new PlayerInfo(uuid, username));
+                    }
+
+                    cachedSupporters = supporters;
+                    cachedFriends = friends;
+                    cachedBlacklisted = blacklisted;
+                    lastFetchTime = now;
                 } else {
-                    CompUtils.LOGGER.error("Error: 'players' field is missing, or is not an array!");
+                    Comprehension.LOGGER.error("Error: one of the following fields are missing, or are not an array: 'supporters' 'friends' 'blacklisted'");
                 }
                 reader.close();
             } else {
-                CompUtils.LOGGER.error("HTTP Error: " + connection.getResponseCode());
+                Comprehension.LOGGER.error("HTTP Error: {}", connection.getResponseCode());
             }
             connection.disconnect();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return players;
+
+        return List.of(
+                cachedSupporters,
+                cachedFriends,
+                cachedBlacklisted
+        );
     }
 
-    // Checks if the given player is a supporter
-    public static boolean isPlayerSupporter(PlayerEntity player) {
-        for (PlayerInfo playerInfo : fetchPlayers()) {
-            if (player.getUuidAsString().equals(playerInfo.uuid())) {
-                return true;
-            }
-        }
-        return false;
+    private static boolean containsArray(JsonObject jsonObject, String check) {
+        return jsonObject.has(check) && jsonObject.get(check).isJsonArray();
     }
 
-    // Checks if the given UUID is from a supporter
-    public static boolean isUuidFromSupporter(UUID uuid) {
-        for (PlayerInfo playerInfo : fetchPlayers()) {
+    public boolean isSupporter(UUID uuid) {
+        for (PlayerInfo playerInfo : fetchPlayers().getFirst()) {
             if (uuid.toString().equals(playerInfo.uuid())) {
                 return true;
             }
         }
+
         return false;
     }
 
-    public static List<PlayerInfo> list = SupporterUtils.fetchPlayers();
+    public boolean isFriend(UUID uuid) {
+        for (PlayerInfo playerInfo : fetchPlayers().get(1)) {
+            if (uuid.toString().equals(playerInfo.uuid())) {
+                return true;
+            }
+        }
 
-    // Sets if being a supporter is required to launch the mod
-    public static void setIsSupporterRequired(boolean supporterRequired) {
-        IS_SUPPORTER_REQUIRED = supporterRequired;
+        return false;
     }
 
-    // Gets the boolean 'IS_SUPPORTER_REQUIRED'
-    public static boolean getIsSupporterRequired() {
-        return IS_SUPPORTER_REQUIRED;
+    public boolean isBlacklisted(UUID uuid) {
+        for (PlayerInfo playerInfo : fetchPlayers().get(2)) {
+            if (uuid.toString().equals(playerInfo.uuid())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

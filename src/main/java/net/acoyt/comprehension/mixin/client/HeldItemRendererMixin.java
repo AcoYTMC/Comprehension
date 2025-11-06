@@ -1,6 +1,6 @@
 package net.acoyt.comprehension.mixin.client;
 
-import net.acoyt.comprehension.item.impl.ShowHandItem;
+import net.acoyt.comprehension.api.item.ShowHandItem;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.item.HeldItemRenderer;

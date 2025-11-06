@@ -1,6 +1,6 @@
 package net.acoyt.comprehension.init;
 
-import net.acoyt.comprehension.util.CompUtils;
+import net.acoyt.comprehension.Comprehension;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundEvent;
@@ -9,13 +9,13 @@ import net.minecraft.util.Identifier;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public interface SoundInit {
+public interface ModSounds {
     Map<SoundEvent, Identifier> SOUND_EVENTS = new LinkedHashMap<>();
 
     // Method 1
     static SoundEvent create(String name) {
-        SoundEvent soundEvent = SoundEvent.of(CompUtils.id(name));
-        SOUND_EVENTS.put(soundEvent, CompUtils.id(name));
+        SoundEvent soundEvent = SoundEvent.of(Comprehension.id(name));
+        SOUND_EVENTS.put(soundEvent, Comprehension.id(name));
         return soundEvent;
     }
 

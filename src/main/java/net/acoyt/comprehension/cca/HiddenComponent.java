@@ -1,61 +1,41 @@
 package net.acoyt.comprehension.cca;
 
+import net.acoyt.comprehension.Comprehension;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
+import org.ladysnake.cca.api.v3.component.ComponentKey;
+import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import org.ladysnake.cca.api.v3.component.tick.CommonTickingComponent;
 
 public class HiddenComponent implements CommonTickingComponent, AutoSyncedComponent {
+    public static final ComponentKey<HiddenComponent> KEY = ComponentRegistry.getOrCreate(Comprehension.id("hidden"), HiddenComponent.class);
     private final PlayerEntity player;
-    private int hideDuration;
-    private boolean isHidden;
+    public int duration;
 
     public HiddenComponent(PlayerEntity player) {
         this.player = player;
     }
 
-    public static HiddenComponent get(PlayerEntity player) {
-        return (HiddenComponent) CompComponents.HIDDEN.get(player);
+    public void sync() {
+        KEY.sync(this.player);
     }
 
     public void tick() {
-        if (isHidden()) {
-            hideDuration = getHideDuration() - 1;
+        if (this.duration > 0) {
+            this.duration--;
+            if (this.duration == 0) {
+                this.sync();
+            }
         }
-
-        if (hideDuration > 0) {
-            setHidden(true);
-        }
-
-        if (hideDuration == 0) {
-            setHidden(false);
-        }
-    }
-
-    public int getHideDuration() {
-        return this.hideDuration;
-    }
-
-    public void setHideDuration(int hideDuration) {
-        this.hideDuration = hideDuration;
-    }
-
-    public boolean isHidden() {
-        return this.isHidden;
-    }
-
-    public void setHidden(boolean isHidden) {
-        this.isHidden = isHidden;
     }
 
     public void readFromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
-        nbt.getInt("hideDuration");
-        nbt.getBoolean("isHidden");
+        nbt.getInt("duration");
     }
 
     public void writeToNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
-        nbt.putInt("hideDuration", this.hideDuration);
-        nbt.putBoolean("isHidden", this.isHidden);
+        nbt.putInt("duration", this.duration);
     }
 }

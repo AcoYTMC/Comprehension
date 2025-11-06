@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class LivingEntityMixin {
     @Inject(method = "canTarget(Lnet/minecraft/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
     private void livingIgnoreHiddenPlayers(LivingEntity living, CallbackInfoReturnable<Boolean> cir) {
-        if (living instanceof PlayerEntity player && HiddenComponent.get(player).isHidden()) {
+        if (living instanceof PlayerEntity player && HiddenComponent.KEY.get(player).duration > 0) {
             cir.setReturnValue(false);
         }
     }

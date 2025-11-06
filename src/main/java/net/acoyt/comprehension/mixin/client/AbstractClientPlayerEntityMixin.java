@@ -1,8 +1,8 @@
 package net.acoyt.comprehension.mixin.client;
 
 import com.mojang.authlib.GameProfile;
+import net.acoyt.comprehension.Comprehension;
 import net.acoyt.comprehension.cca.HiddenComponent;
-import net.acoyt.comprehension.util.CompUtils;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.util.SkinTextures;
@@ -24,8 +24,8 @@ public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity {
 
     @Override
     public boolean shouldRender(double cameraX, double cameraY, double cameraZ) {
-        // Cancels player rendering if isHidden is set to true and one of the conditions is met
-        if (HiddenComponent.get(this).isHidden() && (Math.abs(MinecraftClient.getInstance().getCameraEntity().getRotationVecClient().dotProduct(this.getPos().subtract(cameraX, cameraY, cameraZ).normalize())) > 0.5 || this.isInSneakingPose() ||MinecraftClient.getInstance().options.getPerspective().isFrontView())) {
+        // Cancels player rendering if the duration is greater than 0 and one of the conditions is met
+        if (HiddenComponent.KEY.get(this).duration > 0 && (Math.abs(MinecraftClient.getInstance().getCameraEntity().getRotationVecClient().dotProduct(this.getPos().subtract(cameraX, cameraY, cameraZ).normalize())) > 0.5 || this.isInSneakingPose() ||MinecraftClient.getInstance().options.getPerspective().isFrontView())) {
             return false;
         }
         return super.shouldRender(cameraX, cameraY, cameraZ);
@@ -41,7 +41,7 @@ public abstract class AbstractClientPlayerEntityMixin extends PlayerEntity {
 
             if (defaultTextures != null) {
                 SkinTextures newTextures = new SkinTextures(defaultTextures.texture(), defaultTextures.textureUrl(),
-                        CompUtils.id("textures/capes/chezburger.png"), CompUtils.id("textures/capes/chezburger.png"), defaultTextures.model(), defaultTextures.secure());
+                        Comprehension.id("textures/capes/chezburger.png"), Comprehension.id("textures/capes/chezburger.png"), defaultTextures.model(), defaultTextures.secure());
 
                 cir.setReturnValue(newTextures);
             }

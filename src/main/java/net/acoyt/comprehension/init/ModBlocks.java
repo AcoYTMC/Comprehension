@@ -1,6 +1,6 @@
 package net.acoyt.comprehension.init;
 
-import net.acoyt.comprehension.util.CompUtils;
+import net.acoyt.comprehension.Comprehension;
 import net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -18,7 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public interface BlockInit {
+public interface ModBlocks {
     Map<Block, Identifier> BLOCKS = new LinkedHashMap<>();
 
     // Method 1
@@ -31,13 +31,13 @@ public interface BlockInit {
     /**
      * Block Creation Method 1
      * Requires assigning a registry key via
-     * .registryKey(RegistryKey.of(RegistryKeys.BLOCK, CompUtils.id(<ITEM_IDENTIFIER>)))
+     * .registryKey(RegistryKey.of(RegistryKeys.BLOCK, Comprehension.id(<ITEM_IDENTIFIER>)))
      * at the end of the AbstractBlock.Settings()
      */
     private static <T extends Block> T createBlock(String name, T block, boolean createItem) {
-        BLOCKS.put(block, CompUtils.id(name));
+        BLOCKS.put(block, Comprehension.id(name));
         if (createItem) {
-            ItemInit.ITEMS.put(new BlockItem(block, new Item.Settings().registryKey(RegistryKey.of(RegistryKeys.ITEM, CompUtils.id(name)))), CompUtils.id(name));
+            ModItems.ITEMS.put(new BlockItem(block, new Item.Settings().registryKey(RegistryKey.of(RegistryKeys.ITEM, Comprehension.id(name)))), Comprehension.id(name));
         }
 
         return block;
@@ -50,7 +50,7 @@ public interface BlockInit {
      * Creates no BlockItem
      */
     static Block create(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
-        return Blocks.register(RegistryKey.of(RegistryKeys.BLOCK, CompUtils.id(name)), factory, settings);
+        return Blocks.register(RegistryKey.of(RegistryKeys.BLOCK, Comprehension.id(name)), factory, settings);
     }
 
     /**
@@ -61,13 +61,13 @@ public interface BlockInit {
      */
     static Block createWithItem(String name, Function<AbstractBlock.Settings, Block> factory, AbstractBlock.Settings settings) {
         Block block = create(name, factory, settings);
-        ItemInit.create(name, itemSettings -> new BlockItem(block, itemSettings), new Item.Settings().useBlockPrefixedTranslationKey());
+        ModItems.create(name, itemSettings -> new BlockItem(block, itemSettings), new Item.Settings().useBlockPrefixedTranslationKey());
         return block;
     }
 
-    // Alternative for putting RegistryKey.of(RegistryKeys.BLOCK, CompUtils.id(<ITEM_IDENTIFIER>)) at the end of the AbstractBlock.Settings()
+    // Alternative for putting RegistryKey.of(RegistryKeys.BLOCK, Comprehension.id(<ITEM_IDENTIFIER>)) at the end of the AbstractBlock.Settings()
     static RegistryKey<Block> keyOf(String id) {
-        return RegistryKey.of(RegistryKeys.BLOCK, CompUtils.id(id));
+        return RegistryKey.of(RegistryKeys.BLOCK, Comprehension.id(id));
     }
 
     static void init() {

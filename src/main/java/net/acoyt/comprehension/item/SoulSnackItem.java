@@ -1,7 +1,6 @@
 package net.acoyt.comprehension.item;
 
 import net.acoyt.comprehension.cca.HiddenComponent;
-import net.acoyt.comprehension.util.ColorUtils;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -20,9 +19,9 @@ public class SoulSnackItem extends Item {
         ItemStack stack = user.getStackInHand(hand);
         if (user.isInSneakingPose()) {
             stack.decrement(1);
-            HiddenComponent component = HiddenComponent.get(user);
-            component.setHideDuration(100);
-            component.setHidden(true);
+            HiddenComponent component = HiddenComponent.KEY.get(user);
+            component.duration = 100;
+            component.sync();
 
             return ActionResult.PASS;
         }
@@ -30,6 +29,6 @@ public class SoulSnackItem extends Item {
     }
 
     public Text getName(ItemStack stack) {
-        return ColorUtils.coloredText(Text.translatable(this.getTranslationKey()), Formatting.DARK_AQUA.getColorIndex());
+        return super.getName(stack).copy().formatted(Formatting.DARK_AQUA);
     }
 }

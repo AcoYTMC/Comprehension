@@ -4,8 +4,6 @@ import com.terraformersmc.modmenu.gui.ModsScreen;
 import com.terraformersmc.modmenu.gui.widget.entries.ModListEntry;
 import com.terraformersmc.modmenu.util.mod.Mod;
 import net.acoyt.comprehension.Comprehension;
-import net.acoyt.comprehension.compat.CompConfig;
-import net.acoyt.comprehension.util.ColorUtils;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.StringVisitable;
@@ -42,7 +40,7 @@ public abstract class ModMenuEntryMixin extends Screen {
 
             if (Comprehension.MOD_ID.equals(mod.getId())) {
                 // Modify the text rendering with a new color
-                context.drawText(this.textRenderer, Language.getInstance().reorder(trimmedName), this.rightPaneX + imageOffset, 49, ColorUtils.convertToHex(CompConfig.modNameColor), true);
+                context.drawText(this.textRenderer, Language.getInstance().reorder(trimmedName), this.rightPaneX + imageOffset, 49, 0xFF363255, true);
 
                 // Renders a texture next to the name
                 //context.drawTexture(RenderLayer::getGuiTexturedOverlay, AcornLib.id("acorn.png"), this.rightPaneX + imageOffset + 44, 46, 0, 0 , 13, 13, 13, 13);

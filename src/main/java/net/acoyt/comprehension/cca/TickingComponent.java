@@ -1,61 +1,41 @@
 package net.acoyt.comprehension.cca;
 
+import net.acoyt.comprehension.Comprehension;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
+import org.ladysnake.cca.api.v3.component.ComponentKey;
+import org.ladysnake.cca.api.v3.component.ComponentRegistry;
 import org.ladysnake.cca.api.v3.component.sync.AutoSyncedComponent;
 import org.ladysnake.cca.api.v3.component.tick.CommonTickingComponent;
 
 public class TickingComponent implements CommonTickingComponent, AutoSyncedComponent {
+    public static final ComponentKey<TickingComponent> KEY = ComponentRegistry.getOrCreate(Comprehension.id("ticking"), TickingComponent.class);
     private final LivingEntity living;
-    private int tickDuration;
-    private boolean isTicking;
+    public int duration;
 
     public TickingComponent(LivingEntity living) {
         this.living = living;
     }
 
-    public static TickingComponent get(LivingEntity living) {
-        return (TickingComponent) CompComponents.TICKING.get(living);
+    public void sync() {
+        KEY.sync(this.living);
     }
 
     public void tick() {
-        if (isTicking()) {
-            tickDuration = getTickDuration() - 1;
+        if (this.duration > 0) {
+            this.duration--;
+            if (this.duration == 0) {
+                this.sync();
+            }
         }
-
-        if (tickDuration > 0) {
-            setTicking(true);
-        }
-
-        if (tickDuration == 0) {
-            setTicking(false);
-        }
-    }
-
-    public int getTickDuration() {
-        return this.tickDuration;
-    }
-
-    public void setTickDuration(int tickDuration) {
-        this.tickDuration = tickDuration;
-    }
-
-    public boolean isTicking() {
-        return this.isTicking;
-    }
-
-    public void setTicking(boolean ticking) {
-        this.isTicking = ticking;
     }
 
     public void readFromNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
-        this.tickDuration = nbt.getInt("tickDuration", 0);
-        this.isTicking = nbt.getBoolean("isTicking", false);
+        this.duration = nbt.getInt("duration", 0);
     }
 
     public void writeToNbt(NbtCompound nbt, RegistryWrapper.WrapperLookup wrapperLookup) {
-        nbt.putInt("tickDuration", this.tickDuration);
-        nbt.putBoolean("isTicking", this.isTicking);
+        nbt.putInt("duration", this.duration);
     }
 }
