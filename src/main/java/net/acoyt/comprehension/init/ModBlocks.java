@@ -25,8 +25,10 @@ public interface ModBlocks {
     Block CHEESE = createBlock("cheese", new Block(AbstractBlock.Settings.copy(Blocks.SPONGE).registryKey(keyOf("cheese"))), true);
 
     // Method 2
+    Block TEST = create("name", Block::new, AbstractBlock.Settings.copy(Blocks.STONE));
 
     // Method 3
+    Block OTHER = createWithItem("other", Block::new, AbstractBlock.Settings.copy(Blocks.STONE));
 
     /**
      * Block Creation Method 1
